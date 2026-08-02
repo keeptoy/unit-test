@@ -1,13 +1,89 @@
-# pwf-codex-cloud-hooks
+# pwf-codex-cloud-hooks: Codex Cloud Managed Hooks for planning-with-files
 
-System-managed lifecycle Hooks that connect a global
+**Documentation:** English (canonical) · [简体中文](README.zh-CN.md)
+
+An open-source Codex Cloud Hook adapter and managed runtime prototype that
+connects a global
 [`OthmanAdi/planning-with-files`](https://github.com/OthmanAdi/planning-with-files)
-Skill installation to Codex Cloud sessions.
+Skill installation to remote Codex Cloud sessions. It packages local Codex
+Skill Hook behavior for a disposable cloud sandbox, registers trusted lifecycle
+Hooks through `/etc/codex/requirements.toml`, and provides reproducible install,
+integrity, doctor, repair, rollback, and uninstall workflows.
+
+The project sits at the intersection of Codex Cloud Hooks, managed Hooks, Codex
+Skill and Plugin runtimes, remote-agent session resume, persistent planning,
+and reproducible cloud-sandbox setup.
 
 > **Status:** `v0.2.2` is the published, Cloud-validated baseline. `v0.3.0` is
 > the active development iteration for Managed Runtime Modernization and is not
 > published yet. Its bootstrap checksum remains a guarded placeholder until the
 > final v0.3.0 archive is built.
+
+## What problem does this solve?
+
+A Skill installed on a developer's computer does not run after that computer is
+turned off, and its local Hook configuration does not automatically move into a
+remote Codex Cloud sandbox. A Cloud task needs its own Skill files, executable
+runtime, dependencies, Hook registration, and trust boundary. Local assumptions
+such as project-relative `.codex/hooks.json` commands, `~/.codex/sessions`, or a
+persistent interactive Hook-trust decision may not hold there.
+
+This repository is a working vertical prototype for that missing bridge:
+
+```text
+local planning-with-files Skill + Codex Hooks
+                    |
+                    | pin, import, adapt, install, verify
+                    v
+Codex Cloud system-managed Hooks + owned runtime bundle
+```
+
+Today the implementation is intentionally specific to **planning-with-files**.
+It is not yet a universal "install any Skill in Cloud" converter. The longer
+term opportunity is to extract the proven, Skill-independent pieces—managed
+policy installation, runtime provenance, Codex Host protocol adaptation,
+subprocess supervision, diagnostics, Cloud fixtures, and recovery—then validate
+them with a second, different Plugin before claiming a general framework.
+
+## Who should find this repository?
+
+This project is relevant if you are:
+
+- trying to run a local Codex Skill or Plugin Hook inside **Codex Cloud**;
+- discovering that Skill installation does not also register lifecycle Hooks;
+- unable to persist an interactive Plugin Hook trust decision in a cold cloud
+  sandbox;
+- adapting `.codex/hooks.json` or `${PLUGIN_ROOT}` commands to Cloud managed
+  Hooks and absolute `managed_dir` paths;
+- building remote `SessionStart`, `UserPromptSubmit`, resume, compaction,
+  memory, notification, audit, or safety workflows;
+- looking for an example of `/etc/codex/requirements.toml` Hook ownership,
+  checksum-pinned runtime packaging, drift detection, doctor, repair, and
+  rollback; or
+- interested in maintaining a future open-source Codex Cloud Plugin adapter
+  without silently trusting arbitrary scripts from mutable Skill directories.
+
+If you are exploring the same problem for another Skill or Plugin, open an
+issue with its Hook manifest, runtime dependencies, local path assumptions,
+required events, and expected Cloud behavior. A second read-only adapter is the
+best way to test which parts of this prototype are genuinely reusable.
+
+## Scope and terminology
+
+| Term | Meaning in this repository |
+|---|---|
+| Skill | Instructions and optional scripts discovered by Codex; installing one does not automatically activate its Hooks in Cloud |
+| Plugin Hook | A Hook bundled with a Codex Plugin and subject to normal discovery, enablement, and trust behavior |
+| Managed Hook | A Hook supplied by a system or managed configuration layer; this project installs one through `/etc/codex/requirements.toml` |
+| Host adapter | The thin boundary that validates Codex Hook input, supervises the Skill runtime, and emits bounded Codex JSON |
+| Owned runtime | The exact allowlisted, hash-verified executable files installed beneath `managed_dir` rather than executed from a mutable global Skill |
+| Cloud adapter | The combined deployment and Host-compatibility layer needed to make reviewed local Hook behavior reproducible in Codex Cloud |
+
+"Managed" here describes the Codex configuration source and runtime ownership,
+not an assertion that an Enterprise subscription is required. This repository's
+validated path uses the system requirements file created during sandbox setup.
+That is a dated, tested platform behavior rather than a promise that every
+future Codex Cloud image or account tier will expose identical privileges.
 
 ## Start here
 
@@ -186,6 +262,8 @@ allowlist of every upstream runtime file that the managed adapter can execute.
 
 | Path | Purpose |
 |---|---|
+| `README.zh-CN.md` | Simplified Chinese discovery and onboarding companion; English README remains canonical |
+| `AGENTS.md` | Canonical agent and maintainer instructions for repository work |
 | `install.js` | Managed installer CLI: install, doctor, repair, and uninstall |
 | `hooks/hook_adapter.py` | Current read-only Codex protocol adapter and legacy injection implementation |
 | `patches/patch_planning_skill.py` | Atomic, idempotent, fail-closed `v3.8.2` Cloud compatibility patcher |
@@ -263,7 +341,7 @@ features. Several cases cover multiple related guarantees. Together they cover:
   output hashes, idempotence, and changed/unknown runtime rejection;
 - six exact v0.2.2 Hook output goldens and two Cloud-shaped evidence contracts;
 - multi-file install/doctor/repair/backup/uninstall inventory behavior;
-- deterministic 18-entry ZIP construction with fixed metadata and external Bash.
+- deterministic 19-entry ZIP construction with fixed metadata and external Bash.
 
 Tests use temporary Codex homes and projects and do not write the live
 `$CODEX_HOME` or `/etc/codex/requirements.toml`.

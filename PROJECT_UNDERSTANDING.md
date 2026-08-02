@@ -462,7 +462,7 @@ Phase 1 三轮均不得改变已经通过 v0.2.2 Cloud 验收的 Hook 行为。
 第 3 轮 installer 会把四个上游脚本作为 inactive owned inventory 安装和校验，同时安装
 overlay ledger 与 MIT notice；Managed Hook 命令仍只执行 `hook_adapter.py`。当前测试共
 25 个用例，包含六个精确 v0.2.2 输出 golden、真实 Cloud 形态 JSONL、七文件 payload
-生命周期和 18-entry 确定性 Release ZIP。
+生命周期和 19-entry 确定性 Release ZIP（包含英文规范 README 与简体中文 README）。
 
 ## 14. 本仓库可能退役的条件
 

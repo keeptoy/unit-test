@@ -8,6 +8,7 @@
   "entries": [
     { "path": "LICENSE", "state": "present", "origin": "local" },
     { "path": "README.md", "state": "present", "origin": "local" },
+    { "path": "README.zh-CN.md", "state": "present", "origin": "local" },
     { "path": "package.json", "state": "present", "origin": "local" },
     { "path": "install.js", "state": "present", "origin": "local" },
     { "path": "upstream-manifest.json", "state": "present", "origin": "local" },
